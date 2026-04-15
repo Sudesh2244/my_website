@@ -1,26 +1,32 @@
 import streamlit as st
 from huggingface_hub import InferenceClient
 
-st.title("Hugging Face Inference API Demo")
-st.write("This app demonstrates how to use the Hugging Face Inference API to generate images from text prompts.")
+st.set_page_config(page_title="AI Image Generator", layout="centered")
 
-# Input field for Hugging Face API key
+st.title("🎨 AI Image Generator")
+st.write("Generate images using Hugging Face API")
+
 hf_api_key = st.text_input("Enter your Hugging Face API key:", type="password")
-
-# Input field for text prompt
-prompt = st.text_input("Enter your text prompt:", "Astronaut riding a horse")
+prompt = st.text_input("Enter your prompt:", "Astronaut riding a horse")
 
 if st.button("Generate Image"):
     if not hf_api_key:
-        st.error("Please enter your valid Hugging Face API key.")
+        st.error("❌ Please enter your API key")
+    elif not prompt:
+        st.error("❌ Please enter a prompt")
     else:
-        client = InferenceClient(token=hf_api_key)
         try:
-            st.write(f"Generating image for: '{prompt}'")
-            image = client.text_to_image(
-                prompt=prompt,
-                model="black-forest-labs/FLUX.1-schnell"
-            )
-            st.image(image, caption="Generated Image", use_column_width=True)
+            with st.spinner("⏳ Generating image..."):
+                client = InferenceClient(token=hf_api_key)
+
+                image = client.text_to_image(
+                    prompt=prompt,
+                    model="stabilityai/stable-diffusion-2"
+                )
+
+                st.success("✅ Image generated!")
+                st.image(image, caption=prompt, use_column_width=True)
+
         except Exception as e:
-            st.error(f"Error generating image: {str(e)}")
+            st.error("❌ Failed to generate image")
+            st.exception(e)  # shows real error
