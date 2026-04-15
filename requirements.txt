@@ -2,3 +2,6 @@ streamlit==1.33.0
 huggingface_hub==0.23.0
 pillow
 requests
+streamlit
+huggingface_hub
+transformers
